@@ -79,6 +79,17 @@ public:
 
     }
 
+    std::string nnInfoString(){
+        std::string str = "MLP " + std::to_string(input_size) + "x";
+        uint i = 0;
+        for (auto layer : layerOutputs){
+            str += std::to_string(layer.size());
+            if(i++ != layerOutputs.size()-1) str+="x";
+        }
+        str += "\nActivations: " + std::to_string(layerOutputs.size()-1) + " ReLUs + Softmax\nLoss: Cross Entropy";
+        return str;
+    }
+
 
     enum {MEAN_SQUARE_ERROR, CROSS_ENTROPY_LOSS};
 

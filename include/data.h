@@ -15,14 +15,15 @@ using pixel_vector = Eigen::VectorXf;
 using label_vector = Eigen::VectorXf;
 // Activation functions and their derivatives
 
-#define ENOUGH ((8 * sizeof(int) - 1) / 3 + 2)
+#define ENOUGH 50
 #define IMG_WIDTH 28
 #define IMG_HEIGHT 28
 #define SCALE_FACTOR 10
 #define WINDOW_WIDTH 560
 #define WINDOW_HEIGHT 280
 #define TEXT_POS_X 300
-#define TEXT_POS_Y 50
+// #define TEXT_POS_Y 50
+#define TEXT_POS_Y 70
 
 
 SDL_Texture* createGrayscaleImageTexture(float* array, SDL_Renderer *renderer) {
