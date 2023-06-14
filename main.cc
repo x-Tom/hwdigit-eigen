@@ -45,7 +45,7 @@ int main() {
         784, // INPUT LAYER
         std::make_pair(relu, relu_derivative), 16, 
         std::make_pair(relu, relu_derivative), 16, 
-        std::make_pair(relu, relu_derivative), 10
+        std::make_pair(nullptr, nullptr), 10 // SOFTMAX
     );
 
     // std::cout << nn.nnInfoString() << std::endl;
