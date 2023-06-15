@@ -174,14 +174,14 @@ int main() {
             textcol2 = textGreen;
         } else textcol2 = textRed;
 
-        accuracy = correct/(float)counter;
+        accuracy = correct/(float)(counter+1);
 
         // "Label: %hhu\nPredicted: %hhu\n", + some correct or incorrect text and running correct ratio and percentage
 
         // printf("%d", actual);
         sprintf(str, "Label: %hhu", (uint8_t)actual);
         sprintf(str2, "Predicted: %hhu", (uint8_t)predicted);
-        sprintf(str3, "Accuracy: %f\n%d/%d", accuracy, (int)correct, counter);
+        sprintf(str3, "Accuracy: %f\n%d/%d", accuracy, (int)correct, counter+1);
 
 
         text_surface = TTF_RenderText_Blended(font, str, textColor);
