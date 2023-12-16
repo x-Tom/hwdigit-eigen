@@ -4,4 +4,11 @@ Simple handwritten digit recognition on MNIST dataset using MLP neural network w
 
 ![](shot.png)
 
+### Packages Required
+- sdl2
+- sdl2_ttf
 
+### Instructions
+- Uncompress mnist.npz - run np.py
+- make
+- ./hwdigit
