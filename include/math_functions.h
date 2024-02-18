@@ -17,6 +17,16 @@ float relu_derivative(float x) {
     return (x > 0) ? 1 : 0;
 }
 
+float _sgn(float x){
+    if (x > 0) {
+        return 1;
+    } else if (x < 0){
+        return -1;
+    } else return 0;
+}
+
+std::function<float(float)> sgn(_sgn);
+
 float stl_vec_mean(const std::vector<float>& vec){
     float sum = 0;
     for (auto v : vec){

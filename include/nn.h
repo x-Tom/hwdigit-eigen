@@ -176,7 +176,7 @@ public:
     }
 
     // Backpropagation
-    void backpropagate_mse(const Eigen::VectorXf& desired, float learningRate) {
+    void backpropagate_mse(const Eigen::VectorXf& desired, float learningRate, float regularisation_paremeter = 0, float l1l2_alpha = 1) {
         // we choose cost function as sum(1/2(e)^2), where e = y - p, for simplicity
         // dc/da^(L) = e, L is last layer
         // 
@@ -191,7 +191,7 @@ public:
         }
     }
 
-    void backpropagate_cel(const Eigen::VectorXf& desired, float learningRate) {
+    void backpropagate_cel(const Eigen::VectorXf& desired, float learningRate, float regularisation_paremeter = 0, float l1l2_alpha = 1) {
         // we choose cost function as sum(y*log(p)) and assume final layer uses softmax activation
         // dc/da^(L) = e, L is last layer
         // 
@@ -202,12 +202,13 @@ public:
         for (int l = L; l >= 0; --l) { // traverse back through layers
             if(l < L) delta = (weights.at(l+1).transpose() * delta).array() * layerDerivatives.at(l).array();
             Eigen::VectorXf output = (l > 0) ? layerOutputs.at(l - 1) : inputs; // da^(l)/dw^(l) = a^(l-1)
-            weights.at(l) -= learningRate * delta * output.transpose();
+            auto dCdW = delta * output.transpose();
+            weights.at(l) -= learningRate * (dCdW + regularisation_paremeter * (l1l2_alpha * weights.at(l).unaryExpr(sgn) + (1-l1l2_alpha) * 2 * weights.at(l)));
             biases.at(l) -= learningRate * delta;
         }
     }
 
-    void backpropagate(const Eigen::VectorXf& desired, float learningRate, uint cost_function = MEAN_SQUARE_ERROR){
+    void backpropagate(const Eigen::VectorXf& desired, float learningRate, uint cost_function = MEAN_SQUARE_ERROR, float regularisation_paremeter = 0, float l1l2_alpha = 1){
         switch(cost_function){
             case MEAN_SQUARE_ERROR:
                 backpropagate_mse(desired, learningRate);
@@ -218,7 +219,7 @@ public:
         }
     } 
 
-    float trainSGD(const std::vector<Eigen::VectorXf>& x, const std::vector<Eigen::VectorXf>& y, float learningRate, uint cost_function) {
+    float trainSGD(const std::vector<Eigen::VectorXf>& x, const std::vector<Eigen::VectorXf>& y, float learningRate, uint cost_function, float regularisation_paremeter = 0, float l1l2_alpha = 1) {
         // std::assert(inputs.size() == outputs.size());
         if (x.size() != y.size()) {
             throw std::invalid_argument("Size of the samples vector must match the size of the labels vector.");
@@ -237,7 +238,7 @@ public:
             y.at(i).maxCoeff(&aidx);
             uint actual = static_cast<uint>(aidx);
             correct += (float)(predicted == actual);
-            backpropagate(y.at(i), learningRate, cost_function);
+            backpropagate(y.at(i), learningRate, cost_function, regularisation_paremeter, l1l2_alpha);
             // float val_acc = nn.evaluate(x_val,y_val);
             // std::cout << "training data accuracy: " << val_acc << std::endl;
         }
@@ -246,7 +247,7 @@ public:
     }   
 
     // Mini-batch training function 
-    float trainMiniBatchGD(const std::vector<Eigen::VectorXf>& x, const std::vector<Eigen::VectorXf>& y, int batchSize, float learningRate) {
+    float trainMiniBatchGD(const std::vector<Eigen::VectorXf>& x, const std::vector<Eigen::VectorXf>& y, int batchSize, float learningRate, float regularisation_paremeter = 0, float l1l2_alpha = 1) {
         if (x.size() != y.size()) {
             throw std::invalid_argument("Size of the samples vector must match the size of the labels vector.");
         }
@@ -282,8 +283,12 @@ public:
 
             if (i % (batchSize-1) == 0 || i == x.size()-1) {
                 for (size_t l = 0; l < weights.size(); ++l) {
-                    weights.at(l) += learningRate * weightUpdates.at(l) / static_cast<float>(batchSize);
+                    // weights.at(l) += learningRate * weightUpdates.at(l) / static_cast<float>(batchSize);
+                    // biases.at(l) += learningRate * biasUpdates.at(l) / static_cast<float>(batchSize);
+
+                    weights.at(l) += learningRate * (weightUpdates.at(l) + regularisation_paremeter * (l1l2_alpha * weights.at(l).unaryExpr(sgn) + (1-l1l2_alpha) * weights.at(l))) / static_cast<float>(batchSize);
                     biases.at(l) += learningRate * biasUpdates.at(l) / static_cast<float>(batchSize);
+
                     weightUpdates.at(l).setZero();
                     biasUpdates.at(l).setZero();
                 }

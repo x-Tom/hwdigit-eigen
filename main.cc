@@ -25,6 +25,8 @@ constexpr uint FONT_SIZE_SMALL = 12;
 // constexpr float LEARNING_RATE = 2e-5f;
 // constexpr float LEARNING_RATE = 2e-2f;
 constexpr float LEARNING_RATE = 1e-1f;
+constexpr float REGULARISATION_PARAMETER = 0.001f;
+constexpr float L1L2_ALPHA_PAREMETER = 0.5;
 
 // constexpr unsigned EPOCHS = 0;
 
@@ -70,7 +72,7 @@ int main() {
     
     for(int e = 0; e < EPOCHS; e++){
         // float train_accuracy = nn.trainSGD(x_train, y_train, LEARNING_RATE, NN::CROSS_ENTROPY_LOSS);
-        float train_accuracy = nn.trainMiniBatchGD(x_train, y_train, BATCH_SIZE, LEARNING_RATE);
+        float train_accuracy = nn.trainMiniBatchGD(x_train, y_train, BATCH_SIZE, LEARNING_RATE, REGULARISATION_PARAMETER, L1L2_ALPHA_PAREMETER);
         auto [val_accuracy,_] = nn.evaluate(x_val, y_val);
         std::cout << "Epoch " << e+1 << " completed!" << std::endl;
         std::cout << "Training Accuracy: " << train_accuracy << std::endl;
